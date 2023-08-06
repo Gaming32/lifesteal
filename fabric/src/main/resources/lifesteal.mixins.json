@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.gaming32.lifesteal.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "MixinPlayerDataStorage",
+    "MixinPlayerList",
+    "PlayerDataStorageAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
