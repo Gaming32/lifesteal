@@ -1,5 +1,6 @@
 package io.github.gaming32.lifesteal;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -9,12 +10,17 @@ import dev.architectury.platform.Platform;
 import io.github.gaming32.lifesteal.config.LifestealConfig;
 import io.github.gaming32.lifesteal.event.PlayerEvents;
 import io.github.gaming32.lifesteal.ext.ServerPlayerExt;
+import io.github.gaming32.lifesteal.mixin.MinecraftServerAccessor;
+import io.github.gaming32.lifesteal.mixin.PlayerDataStorageAccessor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.quiltmc.qup.json.JsonReader;
 import org.quiltmc.qup.json.JsonWriter;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -98,6 +104,48 @@ public class Lifesteal {
             CONFIG.write(writer);
         } catch (IOException e) {
             LOGGER.error("Failed to write lifesteal.json5", e);
+        }
+    }
+
+    private static File getLifestealDataPath(MinecraftServer server, GameProfile profile) {
+        return new File(
+            ((PlayerDataStorageAccessor)((MinecraftServerAccessor)server).getPlayerDataStorage()).getPlayerDir(),
+            profile.getId() + ".lifesteal.dat"
+        );
+    }
+
+    public static int getLivesGain(MinecraftServer server, GameProfile profile) {
+        final ServerPlayer player = server.getPlayerList().getPlayer(profile.getId());
+        if (player != null) {
+            return ((ServerPlayerExt)player).ls$getLivesGain();
+        }
+
+        final CompoundTag tag;
+        try {
+            tag = NbtIo.read(getLifestealDataPath(server, profile));
+        } catch (IOException e) {
+            Lifesteal.LOGGER.error("Failed to read {}'s lifesteal data", profile.getName(), e);
+            return 0;
+        }
+        if (tag == null) {
+            return 0;
+        }
+        return tag.getInt("LivesGain");
+    }
+
+    public static void setLivesGain(MinecraftServer server, GameProfile profile, int gain) {
+        final ServerPlayer player = server.getPlayerList().getPlayer(profile.getId());
+        if (player != null) {
+            ((ServerPlayerExt)player).ls$setLivesGain(gain);
+            return;
+        }
+
+        final CompoundTag tag = new CompoundTag();
+        tag.putInt("LivesGain", gain);
+        try {
+            NbtIo.write(tag, getLifestealDataPath(server, profile));
+        } catch (IOException e) {
+            LOGGER.error("Failed to write {}'s lifesteal data", profile.getName(), e);
         }
     }
 }
