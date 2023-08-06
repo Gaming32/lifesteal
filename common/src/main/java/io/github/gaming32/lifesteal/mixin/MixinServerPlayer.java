@@ -44,12 +44,13 @@ public abstract class MixinServerPlayer extends Player implements ServerPlayerEx
 
     @Override
     public void ls$setLivesGain(int gain) {
+        final int old = ls$livesGain;
         ls$livesGain = gain;
-        ls$refreshLivesGain();
+        ls$refreshLivesGain(old);
     }
 
     @Override
-    public void ls$refreshLivesGain() {
+    public void ls$refreshLivesGain(int oldValue) {
         ls$livesGain = LifestealUtil.clamp(ls$livesGain, Lifesteal.CONFIG.getLives());
         final AttributeInstance attribute = getAttribute(Attributes.MAX_HEALTH);
         if (attribute != null) {
@@ -65,10 +66,12 @@ public abstract class MixinServerPlayer extends Player implements ServerPlayerEx
 
         if (ls$livesGain > Lifesteal.CONFIG.getGameOverLife()) return;
         if (Lifesteal.CONFIG.getGameOverMode().forceSpectator) {
-            sendSystemMessage(
-                Component.literal("You have run out of lives! You are now a spectator.")
-                    .withStyle(ChatFormatting.RED)
-            );
+            if (oldValue > Lifesteal.CONFIG.getGameOverLife()) {
+                sendSystemMessage(
+                    Component.literal("You have run out of lives! You are now a spectator.")
+                        .withStyle(ChatFormatting.RED)
+                );
+            }
             setGameMode(GameType.SPECTATOR);
         }
         if (
