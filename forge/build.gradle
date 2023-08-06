@@ -14,13 +14,20 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven { url = 'https://maven.quiltmc.org/repository/release/' }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    shadowCommon(forgeRuntimeLibrary("org.quiltmc.qup:json:0.2.0")) { transitive = false }
+    shadowCommon(forgeRuntimeLibrary("org.quiltmc.qup:gson:0.2.0")) { transitive = false }
 }
 
 processResources {
