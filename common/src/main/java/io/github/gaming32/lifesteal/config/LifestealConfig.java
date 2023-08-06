@@ -13,6 +13,7 @@ public class LifestealConfig {
     private double healthPerLife = 2.0;
     private int gameOverLife = -10;
     private MinMaxBounds.Ints lives = MinMaxBounds.Ints.atLeast(-10);
+    private boolean respawnAtMaxHealth = true;
 
     public void read(JsonReader reader) throws IOException {
         reader.beginObject();
@@ -23,6 +24,7 @@ public class LifestealConfig {
                 case "healthPerLife" -> healthPerLife = reader.nextDouble();
                 case "gameOverLife" -> gameOverLife = reader.nextInt();
                 case "lives" -> lives = MinMaxBounds.Ints.fromJson(LifestealUtil.parseQup(reader));
+                case "respawnAtMaxHealth" -> respawnAtMaxHealth = reader.nextBoolean();
                 default -> {
                     Lifesteal.LOGGER.warn("Unknown key in lifesteal.json5: {}", key);
                     reader.skipValue();
@@ -59,6 +61,9 @@ public class LifestealConfig {
         writer.name("lives");
         LifestealUtil.writeQup(writer, lives.serializeToJson());
 
+        writer.comment("Whether players should respawn with all their hearts full, or only with the default 10.");
+        writer.name("respawnAtMaxHealth").value(respawnAtMaxHealth);
+
         writer.endObject();
     }
 
@@ -76,5 +81,9 @@ public class LifestealConfig {
 
     public MinMaxBounds.Ints getLives() {
         return lives;
+    }
+
+    public boolean isRespawnAtMaxHealth() {
+        return respawnAtMaxHealth;
     }
 }

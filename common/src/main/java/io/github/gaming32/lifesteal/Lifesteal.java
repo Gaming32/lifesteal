@@ -34,6 +34,12 @@ public class Lifesteal {
             ((ServerPlayerExt)newPlayer).ls$setLivesGain(((ServerPlayerExt)oldPlayer).ls$getLivesGain())
         );
 
+        PlayerEvent.PLAYER_RESPAWN.register((newPlayer, conqueredEnd) -> {
+            if (!conqueredEnd && CONFIG.isRespawnAtMaxHealth()) {
+                newPlayer.setHealth(newPlayer.getMaxHealth());
+            }
+        });
+
         PlayerEvents.LOAD_FROM_FILE.register(context -> {
             final CompoundTag tag;
             try {

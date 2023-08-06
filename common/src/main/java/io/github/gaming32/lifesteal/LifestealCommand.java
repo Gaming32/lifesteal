@@ -33,7 +33,7 @@ public class LifestealCommand {
     ) {
         dispatcher.register(literal("lifesteal")
             .requires(ctx -> ctx.hasPermission(2))
-            .then(literal("livesgain")
+            .then(literal("lives")
                 .then(literal("get")
                     .executes(ctx -> getLives(ctx, Collections.singleton(ctx.getSource().getPlayerOrException())))
                     .then(argument("players", EntityArgument.players())
