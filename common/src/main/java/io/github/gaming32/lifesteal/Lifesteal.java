@@ -2,6 +2,7 @@ package io.github.gaming32.lifesteal;
 
 import com.mojang.logging.LogUtils;
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
@@ -36,7 +37,7 @@ public class Lifesteal {
         PlayerEvents.LOAD_FROM_FILE.register(context -> {
             final CompoundTag tag;
             try {
-                tag = NbtIo.read(context.getPlayerFile("lifesteal"));
+                tag = NbtIo.read(context.getPlayerFile("lifesteal.dat"));
             } catch (IOException e) {
                 LOGGER.error("Failed to read {}'s lifesteal data", context.player().getName().getString(), e);
                 return;
@@ -49,7 +50,7 @@ public class Lifesteal {
             final CompoundTag tag = new CompoundTag();
             tag.putInt("LivesGain", ((ServerPlayerExt)context.player()).ls$getLivesGain());
             try {
-                NbtIo.write(tag, context.getPlayerFile("lifesteal"));
+                NbtIo.write(tag, context.getPlayerFile("lifesteal.dat"));
             } catch (IOException e) {
                 LOGGER.error("Failed to write {}'s lifesteal data", context.player().getName().getString(), e);
             }
@@ -66,19 +67,24 @@ public class Lifesteal {
             return EventResult.pass();
         });
 
+        CommandRegistrationEvent.EVENT.register(LifestealCommand::register);
+
         readConfig();
         LOGGER.info("Some quippy comment");
     }
 
-    public static void readConfig() {
+    public static boolean readConfig() {
+        boolean success = true;
         try (JsonReader reader = JsonReader.json5(CONFIG_PATH)) {
             CONFIG.read(reader);
         } catch (IOException e) {
             if (!(e instanceof NoSuchFileException)) {
+                success = false;
                 LOGGER.error("Failed to read lifesteal.json5", e);
             }
         }
         writeConfig();
+        return success;
     }
 
     public static void writeConfig() {
