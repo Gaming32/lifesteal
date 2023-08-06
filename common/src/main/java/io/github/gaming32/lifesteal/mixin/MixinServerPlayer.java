@@ -28,8 +28,6 @@ public abstract class MixinServerPlayer extends Player implements ServerPlayerEx
     @Shadow @Final public MinecraftServer server;
     @Shadow public ServerGamePacketListenerImpl connection;
 
-    @Shadow public abstract void sendSystemMessage(Component component);
-
     @Unique
     private int ls$livesGain;
 
@@ -43,8 +41,8 @@ public abstract class MixinServerPlayer extends Player implements ServerPlayerEx
     }
 
     @Override
-    public void ls$setLivesGain(int gain) {
-        final int old = ls$livesGain;
+    public void ls$setLivesGain(int gain, boolean useOld) {
+        final int old = useOld ? ls$livesGain : gain;
         ls$livesGain = gain;
         ls$refreshLivesGain(old);
     }
@@ -72,7 +70,9 @@ public abstract class MixinServerPlayer extends Player implements ServerPlayerEx
                         .withStyle(ChatFormatting.RED)
                 );
             }
-            setGameMode(GameType.SPECTATOR);
+            if (connection != null) {
+                setGameMode(GameType.SPECTATOR);
+            }
         }
         if (
             Lifesteal.CONFIG.getGameOverMode().kickNonOps &&

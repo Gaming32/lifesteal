@@ -37,7 +37,7 @@ public class Lifesteal {
 
     public static void init() {
         PlayerEvent.PLAYER_CLONE.register((oldPlayer, newPlayer, wonGame) ->
-            ((ServerPlayerExt)newPlayer).ls$setLivesGain(((ServerPlayerExt)oldPlayer).ls$getLivesGain())
+            ((ServerPlayerExt)newPlayer).ls$setLivesGain(((ServerPlayerExt)oldPlayer).ls$getLivesGain(), false)
         );
 
         PlayerEvent.PLAYER_RESPAWN.register((newPlayer, conqueredEnd) -> {
@@ -55,7 +55,7 @@ public class Lifesteal {
                 return;
             }
             if (tag == null) return;
-            ((ServerPlayerExt)context.player()).ls$setLivesGain(tag.getInt("LivesGain"));
+            ((ServerPlayerExt)context.player()).ls$setLivesGain(tag.getInt("LivesGain"), false);
         });
 
         PlayerEvents.SAVE_TO_FILE.register(context -> {
@@ -72,9 +72,9 @@ public class Lifesteal {
             if (!(entity instanceof ServerPlayerExt player)) {
                 return EventResult.pass();
             }
-            player.ls$setLivesGain(player.ls$getLivesGain() - 1);
+            player.ls$setLivesGain(player.ls$getLivesGain() - 1, true);
             if (source.getEntity() instanceof ServerPlayerExt killer) {
-                killer.ls$setLivesGain(killer.ls$getLivesGain() + 1);
+                killer.ls$setLivesGain(killer.ls$getLivesGain() + 1, true);
             }
             return EventResult.pass();
         });
@@ -136,7 +136,7 @@ public class Lifesteal {
     public static void setLivesGain(MinecraftServer server, GameProfile profile, int gain) {
         final ServerPlayer player = server.getPlayerList().getPlayer(profile.getId());
         if (player != null) {
-            ((ServerPlayerExt)player).ls$setLivesGain(gain);
+            ((ServerPlayerExt)player).ls$setLivesGain(gain, true);
             return;
         }
 
