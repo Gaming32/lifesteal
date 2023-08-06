@@ -20,7 +20,12 @@ public class MixinPlayerList {
 
     @Inject(method = "canPlayerLogin", at = @At("HEAD"), cancellable = true)
     private void gameOverNoJoin(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Component> cir) {
-        if (Lifesteal.getLivesGain(server, gameProfile) <= Lifesteal.CONFIG.getGameOverLife()) {
+        if (
+            Lifesteal.CONFIG.getGameOverMode().kickNonOps &&
+                !server.isSingleplayerOwner(gameProfile) &&
+                !server.getPlayerList().isOp(gameProfile) &&
+                Lifesteal.getLivesGain(server, gameProfile) <= Lifesteal.CONFIG.getGameOverLife()
+        ) {
             cir.setReturnValue(Component.literal("You have run out of lives!"));
         }
     }
