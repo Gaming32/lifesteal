@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "MixinPlayerDataStorage",
-    "MixinPlayerList",
-    "PlayerDataStorageAccessor"
+    "MixinPlayerList"
   ],
   "client": [
   ],

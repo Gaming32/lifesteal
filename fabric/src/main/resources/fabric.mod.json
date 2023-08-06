@@ -12,7 +12,11 @@
   "icon": "icon.png",
 
   "environment": "*",
-  "entrypoints": {},
+  "entrypoints": {
+    "main": [
+      "io.github.gaming32.lifesteal.fabric.LifestealFabric"
+    ]
+  },
   "mixins": [
     "lifesteal.mixins.json",
     "lifesteal-common.mixins.json"

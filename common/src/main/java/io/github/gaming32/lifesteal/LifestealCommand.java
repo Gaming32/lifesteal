@@ -66,6 +66,9 @@ public class LifestealCommand {
             .then(literal("reload")
                 .executes(ctx -> {
                     if (Lifesteal.readConfig()) {
+                        for (final ServerPlayer player : ctx.getSource().getServer().getPlayerList().getPlayers()) {
+                            ((ServerPlayerExt)player).ls$refreshLivesGain();
+                        }
                         ctx.getSource().sendSuccess(
                             () -> Component.literal("Successfully reloaded the Lifesteal config"),
                             true

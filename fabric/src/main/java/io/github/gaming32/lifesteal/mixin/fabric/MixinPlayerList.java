@@ -1,6 +1,7 @@
 package io.github.gaming32.lifesteal.mixin.fabric;
 
 import io.github.gaming32.lifesteal.event.PlayerEvents;
+import io.github.gaming32.lifesteal.mixin.PlayerDataStorageAccessor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;

@@ -1,4 +1,4 @@
-package io.github.gaming32.lifesteal.mixin.fabric;
+package io.github.gaming32.lifesteal.mixin;
 
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.spongepowered.asm.mixin.Mixin;

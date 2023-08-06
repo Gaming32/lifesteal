@@ -4,4 +4,6 @@ public interface ServerPlayerExt {
     int ls$getLivesGain();
 
     void ls$setLivesGain(int gain);
+
+    void ls$refreshLivesGain();
 }
